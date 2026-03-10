@@ -1,0 +1,51 @@
+1) Gestión de Inventario
+- API de registro de entrada de medicamentos
+- API de salida de medicamentos
+- Implementación de algoritmo FIFO
+- Validación de cantidad disponible
+- Actualización automática de stock
+
+2) Farmacovigilancia
+- Cálculo automático de días a caducidad
+- Generación de alertas 90/60/30 días
+- Bloqueo automático de lotes vencido
+- Panel visual tipo semáforo
+
+3) Auditoría y Trazabilidad
+- Diseño de tabla de auditoría
+- Registro automático de dispensaciones
+- Registro de usuario, paciente, lote y fecha
+- Restricción de modificación/eliminación
+
+4) Seguridad y Gestión de Usuarios
+- Diseño de tabla Usuarios
+- API de Login
+- Control de roles (Administrador / Farmacéutico)
+- Restricción de permisos por rol
+- Encriptación de contraseñas
+
+5) Interfaz de Usuario (UI)
+- Diseño del dashboard
+- Formulario de entrada/salida
+- Vista de inventario
+- Vista de alertas
+- Vista de reportes
+
+6) Reportes
+- Reporte por medicamento
+- Reporte por periodo dinámico
+- Reporte por tipo (controlado / no controlado)
+- Exportación de reportes
+
+7) Base de Datos
+- Diseño de tabla Medicamentos
+- Diseño de tabla Lotes
+- Diseño de tabla Usuarios
+- Diseño de tabla Auditoría
+- Manejo de transacciones para integridad
+
+8) DevOps y Despliegue
+- Configuración de repositorio
+- Configuración de integración continua (CI)
+- Ambiente de pruebas
+- Despliegue en servidor web
