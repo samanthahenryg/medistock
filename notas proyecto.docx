@@ -1,0 +1,137 @@
+Sistema de Gestión de Farmacia Hospitalaria (“MediStock”)
+
+Contexto del problema:
+La gestión manual de medicamentos en hospitales genera pérdidas por caducidad y riesgos de seguridad del paciente (dispensación errónea). Se requiere un sistema robusto que garantice la trazabilidad lote por lote y valide la seguridad en la entrega 
+
+Requerimientos:
+Funcionales
+Sistema de Farmacia Hospitalaria / Control de Software / SRS / 3.3.1
+
+Gestión de Inventario Crítico por lote y caducidad
+
+Descripción: Permite registrar, actualizar y controlar las entradas y salidas de medicamentos considerando cantidad, número de lote y fecha de caducidad, garantizando la correcta rotación del inventario mediante el algoritmo FIFO (First-In, First-Out).
+Entradas: Datos del medicamento; cantidad; número de lote; fecha de caducidad; tipo de movimiento (entrada o salida).
+Fuente: Los datos son ingresados por el administrador del sistema o por el personal autorizado de farmacia.
+Salidas: Inventario actualizado; selección automática del lote más antiguo disponible para dispensación.
+Destino: Módulo de inventario del sistema.
+Especificación de los requerimientos:
+
+Condición:
+1) Si el usuario autorizado registra una entrada de medicamento con cantidad, número de lote y fecha de caducidad válidos.
+2) Si el usuario autorizado registra una salida de medicamento.
+3) Si existe más de un lote disponible del mismo medicamento al momento de realizar una salida.
+4) Si el usuario intenta registrar una entrada o salida sin completar los campos obligatorios (medicamento, cantidad, lote, fecha de caducidad o tipo de movimiento).
+5) Si la cantidad solicitada en una salida es mayor que la cantidad disponible en el lote correspondiente.
+6) Después de registrar correctamente una entrada o salida.
+
+Acción:
+1) El sistema debe almacenar el medicamento en el inventario asociándolo a su lote y fecha de caducidad, y actualizar la cantidad total disponible.
+2) El sistema debe descontar la cantidad correspondiente del lote seleccionado y actualizar el inventario.
+3) El sistema debe seleccionar automáticamente el lote con la fecha de caducidad más próxima (más antiguo) conforme al algoritmo FIFO.
+4) El sistema debe rechazar la operación y mostrar un mensaje de error solicitando completar la información requerida.
+5) El sistema debe impedir la operación y notificar que no existe suficiente inventario.
+6) El sistema debe actualizar automáticamente el estado del inventario y reflejar los cambios en el módulo correspondiente.
+
+
+Alertas de farmacovigilancia
+
+Descripción: Monitorea automáticamente las fechas de caducidad de los medicamentos y genera alertas visuales tipo semáforo para notificar al administrador sobre lotes próximos a vencer en 30, 60 y 
+90 días, bloqueando la dispensación de medicamentos caducados.
+Entradas: Fecha actual; fechas de caducidad de los medicamentos registrados.
+Fuente: Datos obtenidos del módulo de inventario y del sistema de fecha y hora.
+Salidas: Alertas visuales; bloqueo de lotes caducados.
+Destino: Administrador del sistema y módulo de dispensación.
+Especificación de los requerimientos:
+
+Condición: 
+1) Cuando el sistema consulte los medicamentos registrados en el inventario.
+2) Si un lote está próximo a vencer en 90, 60 o 30 días.
+3) Si la fecha actual es mayor que la fecha de caducidad del lote.
+4) Si existen lotes próximos a vencer o ya caducados.
+
+Acción:
+1) El sistema debe comparar la fecha actual con la fecha de caducidad de cada lote.
+2) El sistema debe mostrar una alerta visual tipo semáforo indicando el nivel de proximidad a vencimiento.
+3) El sistema debe bloquear automáticamente la dispensación de ese lote.
+4) El sistema debe mostrar la notificación correspondiente en el panel del administrador.
+
+
+Auditoría y registro de transacciones
+
+Descripción: Registra de manera inmutable cada transacción realizada en el sistema, incluyendo quién realizó la dispensación, a qué paciente, en qué fecha y hora, y qué lote fue utilizado.
+Entradas: Usuario del sistema; datos del paciente; medicamento; lote; fecha y hora de la transacción.
+Fuente: Información generada automáticamente por el sistema durante cada operación.
+Salidas: Registro de auditoría inalterable.
+Destino:Módulo de auditoría del sistema.
+Especificación de los requerimientos:
+
+Condición: 
+1) Si se realiza una dispensación o movimiento de inventario.
+2) Cuando se genere un registro de auditoría.
+3) Si un usuario intenta modificar o eliminar un registro de auditoría.
+4) Si el administrador solicita revisar el historial de movimientos.
+
+Acción:
+1) El sistema debe generar automáticamente un registro en el módulo de auditoría.
+2) El sistema debe almacenar: usuario que realizó la acción, paciente asociado (si aplica), medicamento, lote utilizado, fecha y hora.
+3) El sistema debe impedir la modificación o eliminación del registro.
+4) El sistema debe mostrar los registros almacenados en el módulo de auditoría.
+
+
+No funcionales
+
+Sistema de Farmacia Hospitalaria / Control de Software / SRS / 4.1.1
+
+Garantizar la integridad de los datos del inventario
+
+Descripción: El sistema debe asegurar que no existan inconsistencias en el stock bajo ninguna circunstancia, utilizando manejo estricto de transacciones en la base de datos.
+Entradas: Operaciones de alta, baja y modificación de inventario.
+Fuente: Módulos de inventario y dispensación.
+Salidas: Confirmación de transacciones exitosas o reversión automática en caso de error.
+Destino: Base de datos del sistema.
+
+
+Elicitación (preguntas con el cliente):
+1. Sobre los usuarios del sistema:
+
+- ¿Quiénes van a usar el sistema? ¿Solo farmacéuticos o también médicos, enfermeras, administradores?
+Farmaceutico (venta) administrador de farmacia (inventario)
+- ¿Necesitan diferentes niveles de permisos/accesos?
+Farmacéutico = medicamento disponibles justificado con el pago (disminuir inventario), el no puede anadir medicamento a inventario 
+Administrado = da entrada a nuevos medicamentos (anadir inventario)
+
+2. Sobre la dispensación de medicamentos:
+- ¿Cómo se va a solicitar un medicamento? ¿El médico hace una receta electrónica o el farmacéutico recibe una receta física?
+Medicamentos por receta o medicamentos libres. 
+Receta médica a mano, verificar al médico, y subir receta a la base de datos
+- ¿Necesitan validar interacciones medicamentosas (que dos medicamentos no se puedan dar juntos)?
+La responsabilidad del farmacéutico es despachar medicamentos, eso es responsabilidad del doctor. 
+Probablemente mencionar que no se puede tomar junta pero la responsabilidad va con el doctor 
+- ¿Hay que verificar alergias del paciente antes de dispensar?
+Eso es por parte del doctor.
+
+3. Sobre el inventario:
+- ¿El sistema debe generar órdenes de compra automáticas cuando el stock esté bajo?
+?
+- ¿Necesitan reportes de consumo por medicamento/departamento/periodo?
+Si, que sea dinamico. Que el cliente decida el periodo del reporte. 
+- ¿Hay medicamentos controlados (narcóticos, psicotrópicos) que requieran un control especial más estricto?
+EL cliente lo declara dentro del sistema. Y si si pide receta obligatoria… creando dos tipos de medicamentos (controlados y no controlados)
+
+4. Sobre la trazabilidad:
+- ¿Necesitan poder rastrear un medicamento específico desde que llega al hospital hasta que se le da al paciente?
+Si, con un sistema de inventario (dabdo de alta y de baja en las bodegas donde estos estan guardados)
+- ¿Si hay un retiro de lote por el fabricante, el sistema debe poder identificar a qué pacientes se les dio?
+Depende del tipo del medicamento es si me importa a quien fue vendido 
+
+5. Aspecto técnico:
+- ¿En qué plataforma debe funcionar? (web, escritorio, móvil)
+web
+- ¿Cuántos usuarios simultáneos esperan?
+todo bien 
+- ¿Necesita integrarse con otros sistemas del hospital (expediente clínico electrónico, admisiones, etc.)?
+Si, no por el momento no 
+
+
+
+ 
