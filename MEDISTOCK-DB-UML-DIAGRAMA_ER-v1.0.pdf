@@ -1,3 +1,20 @@
+Nivel 1: El Sistema completo.
+
+- Sistema de Gestión de Farmacia Hospitalaria – MediStock
+
+Nivel 2: Módulos principales (Ej. Seguridad, Base de Datos, UI).
+
+1) Gestión de Inventario
+2) Farmacovigilancia
+3) Auditoría y Trazabilidad
+4) Seguridad y Gestión de Usuarios
+5) Interfaz de Usuario (UI)
+6) Reportes
+7) Base de Datos
+8) DevOps y Despliegue
+
+Nivel 3: Tareas o funciones específicas (Ej. API de Login, Diseño de tabla Usuarios).
+
 1) Gestión de Inventario
 - API de registro de entrada de medicamentos
 - API de salida de medicamentos
