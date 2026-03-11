@@ -1,0 +1,190 @@
+1. Introduction 
+
+1.1 Purpose
+El propósito de este documento de Especificación de Requisitos de Software (SRS) es describir los requisitos funcionales y no funcionales del sistema MediStock.
+Este documento proporciona una descripción clara de las características, restricciones y comportamiento esperado del sistema. Además, servirá como referencia para el equipo de desarrollo durante las fases de diseño, desarrollo y pruebas del proyecto.
+
+1.2 Convenciones del Documento
+El propósito de este documento de Especificación de Requisitos de Software (SRS) es describir los requisitos funcionales y no funcionales del sistema MediStock.
+Este documento proporciona una descripción clara de las características, restricciones y comportamiento esperado del sistema. Además, servirá como referencia para el equipo de desarrollo durante las fases de diseño, desarrollo y pruebas del proyecto.
+
+1.3 Audiencia Objetivo y Sugerencias de Lectura
+Este documento está dirigido a los siguientes lectores:
+- Equipo de desarrollo, para comprender los requisitos del sistema y guiar la implementación.
+- Miembros del proyecto, para entender el alcance y funcionamiento esperado del sistema.
+- Profesor o evaluador, para revisar los requisitos del proyecto y verificar que se siguen buenas prácticas de ingeniería de software.
+Se recomienda que los lectores comiencen con la sección Alcance del Producto, para entender el propósito general del sistema, y posteriormente revisen las secciones de requisitos.
+
+1.4 Alcance del Producto
+MediStock es un sistema de software diseñado para facilitar la gestión y control del inventario de medicamentos.
+El sistema permitirá registrar medicamentos, almacenar información sobre sus cantidades y mantener un control básico del inventario. El objetivo principal de MediStock es simplificar la administración del inventario y ayudar a evitar errores en el registro de medicamentos.
+
+2. Descripción General
+
+2.1 Perspectiva del Producto
+MediStock es un sistema de software diseñado para apoyar la gestión básica de inventario de medicamentos. El sistema permitirá registrar medicamentos, almacenar información sobre sus cantidades disponibles y mantener un control organizado del inventario.
+El sistema funcionará como una aplicación sencilla que permitirá a los usuarios registrar y consultar información relacionada con los medicamentos almacenados. MediStock utilizará una base de datos para guardar la información y facilitar su consulta.
+
+2.2 Funciones del Producto
+Las principales funciones del sistema MediStock incluyen:
+- Registrar nuevos medicamentos en el sistema.
+- Almacenar información básica de cada medicamento (nombre, cantidad disponible, identificador).
+- Consultar el inventario de medicamentos registrados.
+- Actualizar la cantidad de medicamentos disponibles.
+- Mantener la información almacenada en una base de datos.
+Estas funciones permiten llevar un control básico del inventario de medicamentos de manera organizada.
+
+2.3 Clase de Usuarios y Características
+El sistema MediStock está diseñado principalmente para usuarios que necesitan administrar o consultar información del inventario de medicamentos.
+Las clases de usuarios incluyen:
+- Administrador del sistema:
+    Usuario encargado de registrar medicamentos, actualizar información del inventario y gestionar los datos almacenados en el sistema.
+- Usuario general
+    Usuario que puede consultar la información de los medicamentos registrados en el sistema.
+Se espera que los usuarios tengan conocimientos básicos del uso de computadoras y sistemas informáticos.
+
+2.4 Entorno de Operación 
+El sistema MediStock será ejecutado en un entorno de computadora personal utilizando herramientas de desarrollo comunes.
+El sistema podrá ejecutarse en:
+- Computadoras personales con sistema operativo Windows, macOS o Linux.
+- Navegador web moderno o entorno de desarrollo local.
+- Conexión a una base de datos para almacenar la información del sistema.
+
+2.5 Restricciones de Diseño e Implementación
+El desarrollo del sistema MediStock debe considerar las siguientes restricciones:
+- El proyecto se desarrollará como parte de una asignatura académica durante el semestre.
+- El sistema se desarrollará utilizando herramientas y tecnologías disponibles para el equipo de desarrollo.
+- El proyecto debe mantenerse dentro del tiempo limitado del semestre y del alcance definido inicialmente.
+
+2.6 Documentación del Usuario
+El sistema MediStock contará con documentación básica para facilitar su uso e instalación.
+Esta documentación incluirá:
+- Instrucciones de instalación del sistema.
+- Guía básica de uso para registrar y consultar medicamentos.
+- Información general del sistema en el archivo README.md del repositorio del proyecto.
+
+2.7 Suposiciones y Dependencias
+El desarrollo del sistema MediStock se basa en las siguientes suposiciones:
+- Los usuarios tendrán acceso a una computadora con conexión a internet para acceder al repositorio del proyecto.
+- El sistema dependerá de una base de datos para almacenar la información de los medicamentos.
+- El equipo de desarrollo utilizará GitHub como plataforma para el control de versiones y almacenamiento del código.
+
+3. Requisitos de Interfaces Externas 
+
+3.1 Interfaces de Usuario
+El sistema MediStock contará con una interfaz de usuario sencilla que permitirá a los usuarios interactuar con el sistema para registrar y consultar información sobre medicamentos.
+La interfaz incluirá pantallas básicas para:
+- Registro de medicamentos.
+- Consulta del inventario.
+- Actualización de la cantidad de medicamentos disponibles.
+La interfaz estará diseñada para ser simple e intuitiva, permitiendo que los usuarios puedan utilizar el sistema sin necesidad de capacitación avanzada.
+
+3.2 Interfaces de Hardware 
+El sistema MediStock no requiere hardware especializado para su funcionamiento.
+El sistema podrá ejecutarse en computadoras personales estándar que cuenten con teclado, mouse y monitor. No se requieren dispositivos adicionales para operar el sistema.
+
+3.3 Interfaces de Software 
+MediStock interactúa con los siguientes componentes de software:
+- Un sistema gestor de base de datos para almacenar la información de los medicamentos.
+- GitHub como plataforma para el control de versiones del proyecto.
+- Herramientas de desarrollo utilizadas por el equipo para implementar el sistema.
+Estas herramientas permiten almacenar, gestionar y mantener la información del sistema de manera organizada.
+
+3.4 Interfaces de Comunicación 
+El sistema MediStock puede utilizar conexión a internet para acceder al repositorio del proyecto en GitHub y para la colaboración entre los miembros del equipo de desarrollo.
+La comunicación entre el sistema y la base de datos se realizará mediante las herramientas de desarrollo utilizadas durante la implementación del proyecto.
+
+4. Características del Sistema 
+
+4.1 Registro de Medicamentos 
+Descripción
+- El sistema permitirá registrar nuevos medicamentos dentro del inventario.
+Prioridad
+- Alta
+Entradas
+- Nombre del medicamento
+- Identificador del medicamento
+- Cantidad disponible
+Procesamiento
+- El sistema almacenará la información ingresada por el usuario en la base de datos.
+Salida
+- El medicamento quedará registrado en el inventario del sistema.
+
+4.2 Consulta de Inventario
+Descripción
+- El sistema permitirá a los usuarios consultar los medicamentos registrados en el inventario.
+Prioridad
+- Alta
+Entradas
+- Solicitud del usuario para visualizar los medicamentos registrados.
+Procesamiento
+- El sistema recuperará la información almacenada en la base de datos.
+Salida
+- Se mostrará una lista con los medicamentos registrados y su cantidad disponible.
+
+4.3 Actualización de Inventario
+Descripción
+- El sistema permitirá actualizar la cantidad disponible de un medicamento existente en el inventario.
+Prioridad
+- Media
+Entradas
+- Identificador del medicamento
+- Nueva cantidad disponible
+Procesamiento
+- El sistema actualizará la información correspondiente en la base de datos.
+Salida
+- El inventario mostrará la nueva cantidad del medicamento actualizado.
+
+4.4 Eliminación de Medicamentos
+Descripción
+- El sistema permitirá eliminar medicamentos del inventario cuando ya no sea necesario mantener su registro.
+Prioridad
+- Media
+Entradas
+- Identificador del medicamento.
+Procesamiento
+- El sistema eliminará el registro correspondiente en la base de datos.
+Salida
+- El medicamento dejará de aparecer en el inventario del sistema.
+
+5. Otro Requisitos No Funcionales 
+
+5.1 Requisitos de Rendimiento
+El sistema MediStock debe ser capaz de responder a las solicitudes de los usuarios de manera rápida al registrar, consultar o actualizar información de medicamentos.
+Dado que el sistema manejará un volumen pequeño de datos, las operaciones principales del sistema deben ejecutarse en pocos segundos.
+
+5.2 Requisitos de Seguridad
+El sistema debe proteger la información almacenada en la base de datos evitando modificaciones no autorizadas.
+El acceso al sistema debe limitarse a usuarios autorizados que puedan registrar o modificar información dentro del inventario.
+
+5.3 Requisitos de Protección
+El sistema debe asegurar que la información almacenada en la base de datos no se pierda durante su uso normal.
+Se recomienda realizar respaldos periódicos de la base de datos para evitar la pérdida de información.
+
+5.4 Atributos de Calidad del Software 
+El sistema MediStock debe cumplir con los siguientes atributos de calidad:
+Usabilidad
+- La interfaz del sistema debe ser sencilla e intuitiva para facilitar su uso por parte de los usuarios.
+Confiabilidad
+- El sistema debe almacenar correctamente la información ingresada y permitir su consulta sin errores.
+Mantenibilidad
+- El código del sistema debe estar organizado y documentado para facilitar futuras modificaciones o mejoras.
+
+5.5 Reglas de Negocio
+El sistema debe cumplir con las siguientes reglas básicas:
+- Cada medicamento registrado debe tener un identificador único.
+- La cantidad de medicamentos en el inventario no puede ser negativa.
+- Los medicamentos deben registrarse antes de poder actualizar su cantidad en el sistema.
+
+6. Otros Requisitos 
+Actualmente no se han identificado otros requisitos adicionales fuera de los descritos anteriormente. Sin embargo, el sistema podrá incorporar nuevos requisitos en futuras versiones si el proyecto lo requiere.
+
+Apéndice B: Modelos de Análisis
+Los modelos de análisis utilizados para el desarrollo del sistema MediStock incluyen diagramas y documentación que describen la estructura y funcionamiento del sistema.
+Estos modelos se encuentran almacenados en el repositorio del proyecto dentro de la carpeta documentacion/diagramas.
+
+Apéndice C: Lista de Elementos por Definir 
+Durante el desarrollo del proyecto pueden surgir algunos aspectos que deberán definirse en etapas posteriores. Entre ellos se incluyen:
+- Posibles mejoras en la interfaz del usuario.
+- Funcionalidades adicionales para la gestión del inventario.
+- Optimización del sistema para manejar mayores cantidades de datos.
