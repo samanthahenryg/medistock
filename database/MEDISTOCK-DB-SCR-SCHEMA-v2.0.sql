@@ -37,3 +37,11 @@ CREATE TABLE inventory_movements (
     movement_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (medication_id) REFERENCES medications(medication_id)
 );
+INSERT INTO categories (name, description)
+VALUES ('Analgesicos', 'Medicamentos para aliviar el dolor');
+
+INSERT INTO medications (name, description, category_id, expiration_date)
+VALUES ('Paracetamol', 'Alivio de dolor y fiebre', 1, '2027-12-31');
+
+INSERT INTO inventory (medication_id, quantity)
+VALUES (1, 100);
