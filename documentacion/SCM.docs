@@ -1,0 +1,92 @@
+1.Overview
+En este documento presentamos nuestro Plan de Gestión de Configuración de Software (SCM) para el proyecto MediStock, un sistema que estamos desarrollando para gestionar el inventario de medicamentos en una farmacia o entorno similar.
+El propósito de este plan es definir cómo vamos a organizar, controlar y dar seguimiento a los diferentes componentes del proyecto durante el semestre. Esto incluye el control de versiones del código, la organización del repositorio, la documentación del proyecto y los scripts de base de datos.
+Para gestionar estos elementos utilizaremos un repositorio compartido en GitHub, donde almacenaremos todos los archivos del proyecto y registraremos los cambios realizados por cada integrante del equipo.
+1.1 Scope
+Este plan aplica a todos los elementos del proyecto MediStock que forman parte del desarrollo del sistema. Entre ellos incluimos:
+código fuente del sistema
+documentación del proyecto
+diagramas y modelos del sistema
+scripts de la base de datos
+archivos de configuración del sistema
+Todos estos elementos los almacenaremos y gestionaremos dentro del repositorio del proyecto en GitHub, siguiendo la convención de nombres que definimos como equipo y utilizando control de versiones mediante Git.
+2. References
+  
+3. Definitions and acronyms
+  
+4. The Software Configuration Management Plan
+4.1 Introducción
+En esta sección describimos cómo vamos a gestionar la configuración del software durante el desarrollo del proyecto MediStock. El objetivo es mantener el proyecto organizado, controlar los cambios que se realicen y asegurar que todos los integrantes del equipo trabajen sobre la misma versión del sistema.
+Para lograr esto utilizaremos herramientas de control de versiones y una estructura organizada de archivos. También definimos reglas para registrar cambios, nombrar documentos y mantener actualizado el repositorio del proyecto.
+Esto nos permitirá tener trazabilidad de los cambios realizados durante el desarrollo y evitar la pérdida de información o conflictos entre versiones.
+4.2 SCM management 
+La gestión de configuración del proyecto será responsabilidad de todo el equipo de desarrollo. Cada integrante deberá seguir las reglas establecidas para el control de versiones y la organización del repositorio.
+Para gestionar la configuración utilizaremos GitHub, donde almacenaremos todos los archivos del proyecto. Cada integrante tendrá acceso al repositorio y podrá realizar cambios mediante commits.
+Las modificaciones importantes del sistema se desarrollarán en ramas separadas y posteriormente se integrarán a la rama principal (main) mediante pull requests. Esto permitirá revisar los cambios antes de integrarlos al sistema principal.
+4.3 SCM activities
+Las actividades principales de gestión de configuración que realizaremos durante el desarrollo del proyecto incluyen:
+Identificación de elementos de configuración
+ Definimos como elementos de configuración todos los archivos importantes del proyecto, como el código fuente, la documentación, los diagramas del sistema y los scripts de la base de datos.
+Control de versiones
+ Utilizaremos Git para registrar los cambios realizados en el proyecto. Cada cambio deberá registrarse mediante un commit con una descripción clara de la modificación realizada.
+Gestión del repositorio
+ Todos los archivos del proyecto estarán almacenados en el repositorio de GitHub. Esto permitirá que todos los integrantes del equipo trabajen sobre una misma versión del sistema.
+Control de cambios
+ Cuando se realice una nueva funcionalidad o modificación importante, esta se desarrollará en una rama separada. Después de revisar los cambios, estos se integrarán a la rama principal.
+Organización de archivos
+ Utilizaremos una convención de nombres para organizar los documentos y facilitar la identificación de los archivos del proyecto.
+4.4 Schedules 
+Las actividades de gestión de configuración se realizarán de forma continua durante el desarrollo del proyecto a lo largo del semestre.
+Durante cada sprint o etapa de desarrollo se realizarán commits en el repositorio para registrar los avances del sistema. También se revisarán los cambios realizados antes de integrarlos a la rama principal del proyecto.
+Además, realizaremos revisiones periódicas del repositorio para asegurar que todos los archivos estén organizados correctamente y que se esté siguiendo la convención de nombres definida por el equipo.
+4.5 SCM resources
+Para la gestión de configuración del proyecto utilizaremos los siguientes recursos:
+Git, como sistema de control de versiones para registrar los cambios del proyecto.
+GitHub, como plataforma para almacenar el repositorio y permitir el trabajo colaborativo del equipo.
+Computadoras personales de los integrantes del equipo para el desarrollo del sistema.
+Estos recursos nos permitirán mantener organizado el proyecto y facilitar el trabajo colaborativo entre los miembros del equipo.
+4.6 SCM plan maintenance
+Este plan de gestión de configuración podrá actualizarse durante el desarrollo del proyecto si es necesario. En caso de que se realicen cambios en la forma de trabajar del equipo o en las herramientas utilizadas, el documento será actualizado para reflejar dichos cambios.
+La actualización del plan será responsabilidad del equipo de desarrollo, asegurando que todos los integrantes conozcan y sigan las reglas establecidas para la gestión de configuración del proyecto.
+5. Tailoring of the plan 
+En esta sección describimos cómo adaptamos el Plan de Gestión de Configuración de Software al contexto y tamaño del proyecto MediStock.
+Debido a que se trata de un proyecto académico desarrollado por un equipo pequeño durante un semestre, algunas prácticas formales de gestión de configuración se han simplificado para mantener un proceso práctico y eficiente. Sin embargo, seguimos manteniendo controles básicos de versiones, organización del repositorio y registro de cambios para asegurar la correcta gestión del proyecto.
+5.1 Upward tailoring 
+El upward tailoring se refiere a la posibilidad de agregar procesos o controles adicionales si el proyecto lo requiere.
+En nuestro caso, si el proyecto MediStock llegara a aumentar en complejidad o tamaño, podríamos incorporar prácticas adicionales como revisiones formales de código, auditorías de configuración o herramientas más avanzadas de gestión de proyectos.
+Estas prácticas permitirán mejorar el control de cambios y la calidad del software si el sistema evolucionara a un entorno de desarrollo más grande.
+5.2 Downward tailoring 
+El downward tailoring consiste en simplificar algunos procesos del plan debido al tamaño o naturaleza del proyecto.
+Dado que MediStock es desarrollado por un equipo pequeño dentro de un contexto académico, hemos simplificado algunos procesos de gestión de configuración. Por ejemplo, el control de cambios se realiza directamente mediante commits y pull requests en el repositorio del proyecto, en lugar de utilizar sistemas formales de aprobación.
+Esto nos permite mantener un flujo de trabajo más ágil sin perder el control sobre las versiones del sistema.
+5.3 Format
+Este Plan de Gestión de Configuración de Software ha sido elaborado en formato de documento escrito para describir las políticas, herramientas y procesos que utilizaremos durante el desarrollo del proyecto MediStock.
+El documento está organizado en secciones que describen los objetivos del plan, las herramientas utilizadas, las actividades de gestión de configuración y la forma en que el equipo controlará los cambios del sistema durante el desarrollo.
+6. Conformance to the standard
+En esta sección explicamos cómo nuestro Plan de Gestión de Configuración de Software para el proyecto MediStock cumple con las prácticas básicas recomendadas para la gestión de configuración en proyectos de software.
+El plan sigue una estructura organizada que define cómo gestionaremos los archivos del proyecto, el control de versiones, la documentación y los cambios durante el desarrollo del sistema.
+6.1 Minimum information
+Este documento incluye la información mínima necesaria para gestionar la configuración del proyecto MediStock. Esto incluye:
+descripción del proyecto
+herramientas utilizadas para el control de versiones
+actividades de gestión de configuración
+responsabilidades del equipo
+recursos utilizados
+mantenimiento del plan
+Con esta información podemos asegurar que el equipo tenga una guía clara para organizar y controlar los elementos del proyecto.
+6.2 Presentation format
+El plan está presentado en formato de documento estructurado, organizado en secciones que describen los diferentes aspectos de la gestión de configuración del proyecto.
+Cada sección explica los procesos que el equipo seguirá para mantener organizado el desarrollo del sistema y registrar los cambios realizados durante el proyecto.
+6.3 Consistency criteria
+Para mantener la consistencia del proyecto MediStock, el equipo seguirá las siguientes prácticas:
+uso de control de versiones mediante Git
+almacenamiento de todos los archivos del proyecto en el repositorio compartido
+uso de commits descriptivos para registrar cambios
+organización de documentos mediante una convención de nombres definida por el equipo
+Estas prácticas permitirán mantener un proyecto organizado y facilitar el trabajo colaborativo.
+6.4 Conformance declaration 
+Declaramos que el presente Plan de Gestión de Configuración de Software para el proyecto MediStock cumple con las prácticas básicas de gestión de configuración recomendadas en ingeniería de software.
+Este documento servirá como guía para el equipo durante el desarrollo del sistema y podrá actualizarse si es necesario conforme avance el proyecto.
+
+
+
