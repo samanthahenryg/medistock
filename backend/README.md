@@ -1,1 +1,0 @@
-Backend del sistema MediStock
