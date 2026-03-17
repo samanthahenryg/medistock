@@ -1,1 +1,0 @@
-Frontend del sistema MediStock
