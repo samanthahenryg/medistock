@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediStock — Iniciar Sesión</title>
+    <style>
+        /* ---- Reset y base ---- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ---- Contenedor principal del login ---- */
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        /* ---- Logo y titulo ---- */
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            background: #2E4D7B;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .logo-icon svg {
+            width: 36px;
+            height: 36px;
+            fill: white;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2E4D7B;
+            letter-spacing: -0.5px;
+        }
+
+        .logo p {
+            font-size: 13px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* ---- Mensajes flash (exito / error) ---- */
+        .flash {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .flash.error {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+
+        .flash.success {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+
+        /* ---- Formulario ---- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #111827;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #2E4D7B;
+            box-shadow: 0 0 0 3px rgba(46, 77, 123, 0.10);
+        }
+
+        /* ---- Boton de login ---- */
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #2E4D7B;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn-login:hover {
+            background: #1F3A6B;
+        }
+
+        .btn-login:active {
+            background: #162D55;
+        }
+
+        /* ---- Pie del formulario ---- */
+        .footer-text {
+            text-align: center;
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+
+    <!-- Logo y nombre del sistema -->
+    <div class="logo">
+        <div class="logo-icon">
+            <!-- Icono de cruz medica simple en SVG -->
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+            </svg>
+        </div>
+        <h1>MediStock</h1>
+        <p>Sistema de Gestión de Farmacia Hospitalaria</p>
+    </div>
+
+    <!-- Mensajes de error o éxito (vienen del backend con flash) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Formulario de login -->
+    <!-- action="" envia al mismo URL, method POST para enviar datos seguros -->
+    <form method="POST" action="{{ url_for('login') }}">
+
+        <div class="form-group">
+            <label for="username">Usuario</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Ingresa tu usuario"
+                autocomplete="username"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Ingresa tu contraseña"
+                autocomplete="current-password"
+                required
+            >
+        </div>
+
+        <button type="submit" class="btn-login">
+            Iniciar Sesión
+        </button>
+
+    </form>
+
+    <p class="footer-text">
+        UAG · Ingeniería de Software · 2026
+    </p>
+
+</div>
+
+</body>
+</html>

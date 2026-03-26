@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediStock — Dispensar Medicamento</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #F0F4F8; color: #1a1a2e; }
+
+        .navbar { background: #2E4D7B; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .navbar-brand { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; }
+        .navbar-brand .icon { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .navbar-brand span { font-size: 20px; font-weight: 700; }
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+        .nav-links a { color: rgba(255,255,255,0.80); text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.15); color: white; }
+        .nav-user { display: flex; align-items: center; gap: 12px; }
+        .user-name { color: white; font-size: 13px; font-weight: 600; }
+        .user-role { color: rgba(255,255,255,0.60); font-size: 11px; text-transform: uppercase; }
+        .btn-logout { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 6px; font-size: 13px; text-decoration: none; }
+
+        .main { max-width: 600px; margin: 0 auto; padding: 32px 24px; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 22px; font-weight: 700; }
+        .page-header p { font-size: 13px; color: #6B7280; margin-top: 4px; }
+
+        .flash { padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 20px; }
+        .flash.error   { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+        .flash.success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+
+        .form-card { background: white; border-radius: 14px; padding: 32px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+
+        /* Info de FIFO explicada al usuario */
+        .fifo-info { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 12px 16px; margin-bottom: 24px; font-size: 13px; color: #1E40AF; display: flex; gap: 8px; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+        .label-hint { font-size: 11px; color: #9CA3AF; font-weight: 400; margin-left: 4px; }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #111827;
+            outline: none;
+            background: white;
+            transition: border-color 0.2s;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        select:focus, input:focus { border-color: #2E4D7B; box-shadow: 0 0 0 3px rgba(46,77,123,0.10); }
+
+        /* Campo de receta: oculto por defecto, se muestra si el med es controlado */
+        .receta-group { display: none; }
+        .receta-group.visible { display: block; }
+
+        .alerta-controlado {
+            background: #FEE2E2;
+            border: 1px solid #FECACA;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #991B1B;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .alerta-controlado.visible { display: block; }
+
+        .form-actions { display: flex; gap: 12px; margin-top: 28px; }
+        .btn { padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; border: none; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-primary { background: #1F5C3A; color: white; flex: 1; justify-content: center; }
+        .btn-primary:hover { background: #174D30; }
+        .btn-secondary { background: #F3F4F6; color: #374151; border: 1.5px solid #D1D5DB; }
+        .btn-secondary:hover { background: #E5E7EB; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="{{ url_for('dashboard') }}" class="navbar-brand">
+        <div class="icon">✚</div>
+        <span>MediStock</span>
+    </a>
+    <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}">Inicio</a>
+        <a href="{{ url_for('inventario') }}">Inventario</a>
+        <a href="{{ url_for('salida_medicamento') }}" class="active">Dispensar</a>
+        {% if session['rol'] == 'admin' %}
+            <a href="{{ url_for('entrada_medicamento') }}">Entrada</a>
+            <a href="{{ url_for('alertas') }}">Alertas</a>
+            <a href="{{ url_for('reportes') }}">Reportes</a>
+            <a href="{{ url_for('auditoria') }}">Auditoría</a>
+        {% endif %}
+    </div>
+    <div class="nav-user">
+        <div>
+            <div class="user-name">{{ session['nombre'] }}</div>
+            <div class="user-role">{% if session['rol'] == 'admin' %}Administrador{% else %}Farmacéutico{% endif %}</div>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</nav>
+
+<main class="main">
+    <div class="page-header">
+        <h1> Dispensar medicamento</h1>
+        <p>Registra la entrega de un medicamento a un paciente.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}{% endif %}
+    {% endwith %}
+
+    <div class="form-card">
+
+        <!-- Explicacion del FIFO para el usuario -->
+        <div class="fifo-info">
+            <span>ℹ️</span>
+            <span>El sistema selecciona automáticamente el lote más antiguo disponible
+            (algoritmo FIFO) para garantizar la correcta rotación del inventario.</span>
+        </div>
+
+        <form method="POST" action="{{ url_for('salida_medicamento') }}">
+
+            <!-- Selector de medicamento -->
+            <div class="form-group">
+                <label for="medicamento_id">
+                    Medicamento <span class="label-hint">* obligatorio</span>
+                </label>
+                <select id="medicamento_id" name="medicamento_id" required onchange="verificarControlado(this)">
+                    <option value="">— Selecciona un medicamento —</option>
+                    {% for med in medicamentos %}
+                    <option value="{{ med.id }}" data-tipo="{{ med.tipo }}">
+                        {{ med.nombre }}
+                        ({{ med.stock_total }} disponibles)
+                        {% if med.tipo == 'controlado' %} {% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Aviso medicamento controlado -->
+            <div class="alerta-controlado" id="aviso-controlado">
+                 Este medicamento es <strong>controlado</strong>. Es obligatorio ingresar el número de receta médica.
+            </div>
+
+            <!-- Campo receta (solo visible si es controlado) -->
+            <div class="form-group receta-group" id="campo-receta">
+                <label for="numero_receta">
+                    Número de receta médica <span class="label-hint">* obligatorio para controlados</span>
+                </label>
+                <input
+                    type="text"
+                    id="numero_receta"
+                    name="numero_receta"
+                    placeholder="Ej: REC-2026-0042"
+                >
+            </div>
+
+            <!-- Nombre del paciente -->
+            <div class="form-group">
+                <label for="paciente_nombre">
+                    Nombre del paciente <span class="label-hint">* obligatorio</span>
+                </label>
+                <input
+                    type="text"
+                    id="paciente_nombre"
+                    name="paciente_nombre"
+                    placeholder="Nombre completo del paciente"
+                    required
+                >
+            </div>
+
+            <!-- Cantidad -->
+            <div class="form-group">
+                <label for="cantidad">
+                    Cantidad a dispensar <span class="label-hint">* obligatorio</span>
+                </label>
+                <input
+                    type="number"
+                    id="cantidad"
+                    name="cantidad"
+                    placeholder="Ej: 10"
+                    min="1"
+                    required
+                >
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('inventario') }}" class="btn btn-secondary">← Cancelar</a>
+                <button type="submit" class="btn btn-primary"> Confirmar dispensación</button>
+            </div>
+
+        </form>
+    </div>
+</main>
+
+<script>
+    function verificarControlado(select) {
+        const tipo = select.options[select.selectedIndex].getAttribute('data-tipo');
+        const aviso  = document.getElementById('aviso-controlado');
+        const campo  = document.getElementById('campo-receta');
+        const receta = document.getElementById('numero_receta');
+        if (tipo === 'controlado') {
+            aviso.classList.add('visible');
+            campo.classList.add('visible');
+            receta.required = true;
+        } else {
+            aviso.classList.remove('visible');
+            campo.classList.remove('visible');
+            receta.required = false;
+            receta.value = '';
+        }
+    }
+</script>
+</body>
+</html>

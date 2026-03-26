@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediStock — Alertas de Farmacovigilancia</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #F0F4F8; color: #1a1a2e; }
+        .navbar { background: #2E4D7B; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .navbar-brand { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; }
+        .navbar-brand .icon { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .navbar-brand span { font-size: 20px; font-weight: 700; }
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+        .nav-links a { color: rgba(255,255,255,0.80); text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.15); color: white; }
+        .nav-user { display: flex; align-items: center; gap: 12px; }
+        .user-name { color: white; font-size: 13px; font-weight: 600; }
+        .user-role { color: rgba(255,255,255,0.60); font-size: 11px; text-transform: uppercase; }
+        .btn-logout { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 6px; font-size: 13px; text-decoration: none; }
+
+        .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 22px; font-weight: 700; }
+        .page-header p { font-size: 13px; color: #6B7280; margin-top: 4px; }
+
+        /* Resumen semaforo */
+        .semaforo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
+        .semaforo-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); display: flex; align-items: center; gap: 14px; }
+        .semaforo-dot { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; }
+        .semaforo-dot.rojo    { background: #DC2626; box-shadow: 0 0 8px rgba(220,38,38,0.4); }
+        .semaforo-dot.amarillo{ background: #CA8A04; box-shadow: 0 0 8px rgba(202,138,4,0.4); }
+        .semaforo-dot.verde   { background: #16A34A; box-shadow: 0 0 8px rgba(22,163,74,0.4); }
+        .semaforo-dot.gris    { background: #9CA3AF; }
+        .semaforo-info .count { font-size: 26px; font-weight: 700; color: #111827; }
+        .semaforo-info .desc  { font-size: 12px; color: #6B7280; }
+
+        /* Tabla */
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #F3F4F6; background: #FAFAFA; }
+        td { padding: 14px 16px; border-bottom: 1px solid #F9FAFB; color: #374151; }
+        tr:last-child td { border-bottom: none; }
+
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge.rojo    { background: #FEE2E2; color: #991B1B; }
+        .badge.amarillo{ background: #FEF9C3; color: #854D0E; }
+        .badge.verde   { background: #DCFCE7; color: #166534; }
+        .badge.vencido { background: #F3F4F6; color: #6B7280; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+        .dot.rojo    { background: #DC2626; }
+        .dot.amarillo{ background: #CA8A04; }
+        .dot.verde   { background: #16A34A; }
+        .dot.vencido { background: #9CA3AF; }
+
+        .empty-state { text-align: center; padding: 48px; color: #9CA3AF; }
+        .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
+
+        .section-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="{{ url_for('dashboard') }}" class="navbar-brand"><div class="icon">✚</div><span>MediStock</span></a>
+    <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}">Inicio</a>
+        <a href="{{ url_for('inventario') }}">Inventario</a>
+        <a href="{{ url_for('salida_medicamento') }}">Dispensar</a>
+        <a href="{{ url_for('entrada_medicamento') }}">Entrada</a>
+        <a href="{{ url_for('alertas') }}" class="active">Alertas</a>
+        <a href="{{ url_for('reportes') }}">Reportes</a>
+        <a href="{{ url_for('auditoria') }}">Auditoría</a>
+    </div>
+    <div class="nav-user">
+        <div><div class="user-name">{{ session['nombre'] }}</div><div class="user-role">Administrador</div></div>
+        <a href="{{ url_for('logout') }}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</nav>
+
+<main class="main">
+    <div class="page-header">
+        <h1> Alertas de farmacovigilancia</h1>
+        <p>Monitoreo automático de fechas de caducidad de todos los lotes.</p>
+    </div>
+
+    <!-- Resumen semaforo -->
+    {% set vencidos  = lotes | selectattr('dias_restantes', 'le', 0)  | list %}
+    {% set rojos     = lotes | selectattr('dias_restantes', 'gt', 0) | selectattr('dias_restantes', 'le', 30)  | list %}
+    {% set amarillos = lotes | selectattr('dias_restantes', 'gt', 30) | selectattr('dias_restantes', 'le', 60) | list %}
+    {% set verdes    = lotes | selectattr('dias_restantes', 'gt', 60) | selectattr('dias_restantes', 'le', 90) | list %}
+
+    <div class="semaforo-grid">
+        <div class="semaforo-card">
+            <div class="semaforo-dot gris"></div>
+            <div class="semaforo-info">
+                <div class="count">{{ vencidos | length }}</div>
+                <div class="desc">Lotes vencidos</div>
+            </div>
+        </div>
+        <div class="semaforo-card">
+            <div class="semaforo-dot rojo"></div>
+            <div class="semaforo-info">
+                <div class="count">{{ rojos | length }}</div>
+                <div class="desc">Vencen en 0-30 días</div>
+            </div>
+        </div>
+        <div class="semaforo-card">
+            <div class="semaforo-dot amarillo"></div>
+            <div class="semaforo-info">
+                <div class="count">{{ amarillos | length }}</div>
+                <div class="desc">Vencen en 31-60 días</div>
+            </div>
+        </div>
+        <div class="semaforo-card">
+            <div class="semaforo-dot verde"></div>
+            <div class="semaforo-info">
+                <div class="count">{{ verdes | length }}</div>
+                <div class="desc">Vencen en 61-90 días</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de todos los lotes con alertas -->
+    <div class="section-title">Todos los lotes con alerta activa</div>
+    <div class="table-container">
+        {% if lotes %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Medicamento</th>
+                    <th>Tipo</th>
+                    <th>Lote</th>
+                    <th>Cantidad</th>
+                    <th>Fecha caducidad</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lote in lotes %}
+                <tr>
+                    <td><strong>{{ lote.medicamento }}</strong></td>
+                    <td><span style="font-size:12px;color:#6B7280;">{{ lote.tipo }}</span></td>
+                    <td><code style="background:#F3F4F6;padding:2px 6px;border-radius:4px;font-size:12px;">{{ lote.numero_lote }}</code></td>
+                    <td>{{ lote.cantidad }}</td>
+                    <td>{{ lote.fecha_caducidad }}</td>
+                    <td>
+                        {% if lote.dias_restantes <= 0 %}
+                            <span class="badge vencido"><span class="dot vencido"></span> VENCIDO — bloqueado</span>
+                        {% elif lote.dias_restantes <= 30 %}
+                            <span class="badge rojo"><span class="dot rojo"></span> {{ lote.dias_restantes }} días</span>
+                        {% elif lote.dias_restantes <= 60 %}
+                            <span class="badge amarillo"><span class="dot amarillo"></span> {{ lote.dias_restantes }} días</span>
+                        {% elif lote.dias_restantes <= 90 %}
+                            <span class="badge verde"><span class="dot verde"></span> {{ lote.dias_restantes }} días</span>
+                        {% else %}
+                            <span style="color:#16A34A;font-size:13px;"> {{ lote.dias_restantes }} días</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon"></div>
+            <p>No hay lotes con alertas activas en este momento.</p>
+        </div>
+        {% endif %}
+    </div>
+</main>
+</body>
+</html>

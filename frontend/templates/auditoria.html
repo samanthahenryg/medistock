@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediStock — Auditoría</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #F0F4F8; color: #1a1a2e; }
+        .navbar { background: #2E4D7B; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .navbar-brand { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; }
+        .navbar-brand .icon { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .navbar-brand span { font-size: 20px; font-weight: 700; }
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+        .nav-links a { color: rgba(255,255,255,0.80); text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.15); color: white; }
+        .nav-user { display: flex; align-items: center; gap: 12px; }
+        .user-name { color: white; font-size: 13px; font-weight: 600; }
+        .user-role { color: rgba(255,255,255,0.60); font-size: 11px; text-transform: uppercase; }
+        .btn-logout { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 6px; font-size: 13px; text-decoration: none; }
+
+        .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 22px; font-weight: 700; }
+        .page-header p { font-size: 13px; color: #6B7280; margin-top: 4px; }
+
+        /* Aviso de solo lectura */
+        .aviso-readonly { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #1E40AF; display: flex; gap: 8px; align-items: center; }
+
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #F3F4F6; background: #FAFAFA; }
+        td { padding: 12px 16px; border-bottom: 1px solid #F9FAFB; color: #374151; vertical-align: top; }
+        tr:last-child td { border-bottom: none; }
+
+        /* Badges por tipo de accion */
+        .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .badge.ENTRADA { background: #DCFCE7; color: #166534; }
+        .badge.SALIDA  { background: #DBEAFE; color: #1E40AF; }
+        .badge.LOGIN   { background: #F3F4F6; color: #374151; }
+        .badge.LOGOUT  { background: #F3F4F6; color: #374151; }
+        .badge.ERROR   { background: #FEE2E2; color: #991B1B; }
+
+        .fecha { font-size: 12px; color: #9CA3AF; white-space: nowrap; }
+        .descripcion { font-size: 13px; color: #374151; max-width: 400px; }
+
+        .empty-state { text-align: center; padding: 48px; color: #9CA3AF; }
+        .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="{{ url_for('dashboard') }}" class="navbar-brand"><div class="icon">✚</div><span>MediStock</span></a>
+    <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}">Inicio</a>
+        <a href="{{ url_for('inventario') }}">Inventario</a>
+        <a href="{{ url_for('salida_medicamento') }}">Dispensar</a>
+        <a href="{{ url_for('entrada_medicamento') }}">Entrada</a>
+        <a href="{{ url_for('alertas') }}">Alertas</a>
+        <a href="{{ url_for('reportes') }}">Reportes</a>
+        <a href="{{ url_for('auditoria') }}" class="active">Auditoría</a>
+    </div>
+    <div class="nav-user">
+        <div><div class="user-name">{{ session['nombre'] }}</div><div class="user-role">Administrador</div></div>
+        <a href="{{ url_for('logout') }}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</nav>
+
+<main class="main">
+    <div class="page-header">
+        <h1> Auditoría del sistema</h1>
+        <p>Historial completo e inmutable de todas las acciones realizadas.</p>
+    </div>
+
+    <div class="aviso-readonly">
+         <span>Este registro es de <strong>solo lectura</strong>. Ningún registro puede ser modificado o eliminado.</span>
+    </div>
+
+    <div class="table-container">
+        {% if registros %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha y hora</th>
+                    <th>Acción</th>
+                    <th>Usuario</th>
+                    <th>Descripción</th>
+                    <th>Medicamento</th>
+                    <th>Paciente</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in registros %}
+                <tr>
+                    <td class="fecha">{{ r.fecha_hora }}</td>
+                    <td><span class="badge {{ r.tipo_accion }}">{{ r.tipo_accion }}</span></td>
+                    <td>{{ r.nombre_usuario or '—' }}</td>
+                    <td class="descripcion">{{ r.descripcion }}</td>
+                    <td>{{ r.nombre_medicamento or '—' }}</td>
+                    <td>{{ r.paciente or '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon"></div>
+            <p>No hay registros de auditoría todavía.</p>
+        </div>
+        {% endif %}
+    </div>
+</main>
+</body>
+</html>

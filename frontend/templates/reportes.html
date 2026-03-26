@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediStock — Reportes</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #F0F4F8; color: #1a1a2e; }
+        .navbar { background: #2E4D7B; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .navbar-brand { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; }
+        .navbar-brand .icon { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .navbar-brand span { font-size: 20px; font-weight: 700; }
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+        .nav-links a { color: rgba(255,255,255,0.80); text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.15); color: white; }
+        .nav-user { display: flex; align-items: center; gap: 12px; }
+        .user-name { color: white; font-size: 13px; font-weight: 600; }
+        .user-role { color: rgba(255,255,255,0.60); font-size: 11px; text-transform: uppercase; }
+        .btn-logout { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 6px; font-size: 13px; text-decoration: none; }
+
+        .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 22px; font-weight: 700; }
+        .page-header p { font-size: 13px; color: #6B7280; margin-top: 4px; }
+
+        /* Filtros */
+        .filtros-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: 24px; }
+        .filtros-card h2 { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #374151; }
+        .filtros-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-size: 12px; font-weight: 600; color: #374151; }
+        select, input[type="date"] { padding: 9px 12px; border: 1.5px solid #D1D5DB; border-radius: 8px; font-size: 13px; color: #111827; outline: none; background: white; font-family: 'Segoe UI', Arial, sans-serif; }
+        select:focus, input:focus { border-color: #2E4D7B; }
+
+        .btn { padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; border: none; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-primary { background: #2E4D7B; color: white; }
+        .btn-primary:hover { background: #1F3A6B; }
+        .btn-secondary { background: #F3F4F6; color: #374151; border: 1.5px solid #D1D5DB; }
+        .btn-secondary:hover { background: #E5E7EB; }
+
+        .filtros-actions { display: flex; gap: 10px; align-items: flex-end; margin-top: 4px; }
+
+        /* Resumen total */
+        .resumen { display: flex; gap: 14px; margin-bottom: 20px; }
+        .resumen-card { background: white; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); flex: 1; }
+        .resumen-card .val { font-size: 24px; font-weight: 700; color: #111827; }
+        .resumen-card .lbl { font-size: 12px; color: #6B7280; margin-top: 2px; }
+
+        /* Tabla resultados */
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #F3F4F6; background: #FAFAFA; }
+        td { padding: 12px 16px; border-bottom: 1px solid #F9FAFB; color: #374151; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #F9FAFB; }
+
+        .badge { display: inline-flex; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .badge.controlado { background: #FEE2E2; color: #991B1B; }
+        .badge.libre { background: #DCFCE7; color: #166534; }
+
+        .empty-state { text-align: center; padding: 48px; color: #9CA3AF; }
+        .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="{{ url_for('dashboard') }}" class="navbar-brand"><div class="icon">✚</div><span>MediStock</span></a>
+    <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}">Inicio</a>
+        <a href="{{ url_for('inventario') }}">Inventario</a>
+        <a href="{{ url_for('salida_medicamento') }}">Dispensar</a>
+        <a href="{{ url_for('entrada_medicamento') }}">Entrada</a>
+        <a href="{{ url_for('alertas') }}">Alertas</a>
+        <a href="{{ url_for('reportes') }}" class="active">Reportes</a>
+        <a href="{{ url_for('auditoria') }}">Auditoría</a>
+    </div>
+    <div class="nav-user">
+        <div><div class="user-name">{{ session['nombre'] }}</div><div class="user-role">Administrador</div></div>
+        <a href="{{ url_for('logout') }}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</nav>
+
+<main class="main">
+    <div class="page-header">
+        <h1> Reportes de consumo</h1>
+        <p>Filtra las dispensaciones por periodo, medicamento y tipo.</p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-card">
+        <h2> Filtros</h2>
+        <form method="GET" action="{{ url_for('reportes') }}">
+            <div class="filtros-grid">
+                <div class="form-group">
+                    <label for="fecha_inicio">Fecha inicio</label>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio }}">
+                </div>
+                <div class="form-group">
+                    <label for="fecha_fin">Fecha fin</label>
+                    <input type="date" id="fecha_fin" name="fecha_fin" value="{{ fecha_fin }}">
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tipo de medicamento</label>
+                    <select id="tipo" name="tipo">
+                        <option value="todos" {% if tipo_filtro == 'todos' %}selected{% endif %}>Todos</option>
+                        <option value="libre" {% if tipo_filtro == 'libre' %}selected{% endif %}>Libre</option>
+                        <option value="controlado" {% if tipo_filtro == 'controlado' %}selected{% endif %}>Controlado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="medicamento_id">Medicamento específico</label>
+                    <select id="medicamento_id" name="medicamento_id">
+                        <option value="">Todos los medicamentos</option>
+                        {% for med in medicamentos %}
+                        <option value="{{ med.id }}" {% if medicamento_id == med.id|string %}selected{% endif %}>{{ med.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="filtros-actions" style="margin-top:16px;">
+                <button type="submit" class="btn btn-primary"> Generar reporte</button>
+                <a href="{{ url_for('reportes') }}" class="btn btn-secondary"> Limpiar filtros</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Resumen de totales -->
+    {% if dispensaciones %}
+    <div class="resumen">
+        <div class="resumen-card">
+            <div class="val">{{ dispensaciones | length }}</div>
+            <div class="lbl">Total dispensaciones</div>
+        </div>
+        <div class="resumen-card">
+            <div class="val">{{ dispensaciones | sum(attribute='cantidad') }}</div>
+            <div class="lbl">Total unidades dispensadas</div>
+        </div>
+        <div class="resumen-card">
+            <div class="val">{{ dispensaciones | selectattr('tipo_medicamento', 'eq', 'controlado') | list | length }}</div>
+            <div class="lbl">Medicamentos controlados</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tabla de resultados -->
+    <div class="table-container">
+        {% if dispensaciones %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha y hora</th>
+                    <th>Medicamento</th>
+                    <th>Tipo</th>
+                    <th>Lote</th>
+                    <th>Cantidad</th>
+                    <th>Paciente</th>
+                    <th>Farmacéutico</th>
+                    <th>Receta</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in dispensaciones %}
+                <tr>
+                    <td style="font-size:12px;color:#9CA3AF;white-space:nowrap;">{{ d.fecha_hora }}</td>
+                    <td><strong>{{ d.medicamento }}</strong></td>
+                    <td><span class="badge {{ d.tipo_medicamento }}">{{ d.tipo_medicamento }}</span></td>
+                    <td><code style="background:#F3F4F6;padding:2px 6px;border-radius:4px;font-size:12px;">{{ d.numero_lote }}</code></td>
+                    <td><strong>{{ d.cantidad }}</strong></td>
+                    <td>{{ d.paciente_nombre }}</td>
+                    <td>{{ d.farmaceutico }}</td>
+                    <td>{{ d.numero_receta or '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon"></div>
+            <p>No se encontraron dispensaciones con los filtros seleccionados.</p>
+            <p style="font-size:12px;margin-top:6px;">Intenta con un rango de fechas más amplio o sin filtros.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</main>
+</body>
+</html>

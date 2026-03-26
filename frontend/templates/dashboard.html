@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediStock — Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #F0F4F8;
+            color: #1a1a2e;
+        }
+
+        /* ---- NAVBAR ---- */
+        .navbar {
+            background: #2E4D7B;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .navbar-brand .icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .navbar-brand span {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        /* Links de navegacion */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.80);
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+
+        /* Info del usuario y boton de logout */
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-user .user-info {
+            text-align: right;
+        }
+
+        .nav-user .user-name {
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .nav-user .user-role {
+            color: rgba(255,255,255,0.60);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* ---- CONTENIDO PRINCIPAL ---- */
+        .main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* Saludo de bienvenida */
+        .welcome {
+            margin-bottom: 28px;
+        }
+
+        .welcome h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .welcome p {
+            color: #6B7280;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Mensajes flash */
+        .flash {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .flash.error   { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+        .flash.success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+
+        /* ---- TARJETAS DE RESUMEN ---- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.blue   { background: #EFF6FF; }
+        .card-icon.green  { background: #F0FDF4; }
+        .card-icon.yellow { background: #FEFCE8; }
+        .card-icon.red    { background: #FEF2F2; }
+
+        .card-info .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+            line-height: 1;
+        }
+
+        .card-info .label {
+            font-size: 13px;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+
+        /* ---- PANEL DE ALERTAS SEMAFORO ---- */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alertas-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            margin-bottom: 28px;
+        }
+
+        /* Tabla de alertas */
+        .alertas-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .alertas-table th {
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .alertas-table td {
+            padding: 12px 12px;
+            border-bottom: 1px solid #F9FAFB;
+            color: #374151;
+        }
+
+        .alertas-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Badges del semaforo */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ROJO: 0-30 dias */
+        .badge.rojo {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        /* AMARILLO: 31-60 dias */
+        .badge.amarillo {
+            background: #FEF9C3;
+            color: #854D0E;
+        }
+
+        /* VERDE: 61-90 dias */
+        .badge.verde {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        /* VENCIDO */
+        .badge.vencido {
+            background: #F3F4F6;
+            color: #6B7280;
+        }
+
+        /* Punto del semaforo */
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+        .dot.rojo    { background: #DC2626; }
+        .dot.amarillo{ background: #CA8A04; }
+        .dot.verde   { background: #16A34A; }
+        .dot.vencido { background: #9CA3AF; }
+
+        /* Sin alertas */
+        .empty-state {
+            text-align: center;
+            padding: 32px;
+            color: #9CA3AF;
+            font-size: 14px;
+        }
+
+        .empty-state .icon { font-size: 36px; margin-bottom: 8px; }
+
+        /* ---- ACCESOS RAPIDOS ---- */
+        .accesos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .acceso-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            transition: box-shadow 0.2s, transform 0.15s;
+            border: 1.5px solid transparent;
+        }
+
+        .acceso-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+            transform: translateY(-2px);
+            border-color: #2E4D7B;
+        }
+
+        .acceso-card .acc-icon {
+            font-size: 24px;
+        }
+
+        .acceso-card .acc-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .acceso-card .acc-desc {
+            font-size: 12px;
+            color: #9CA3AF;
+        }
+
+        /* Ocultar accesos de admin para farmaceuticos */
+        .admin-only {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAVBAR - barra de navegacion superior
+     Muestra links distintos segun el rol del usuario
+     ============================================================ -->
+<nav class="navbar">
+    <a href="{{ url_for('dashboard') }}" class="navbar-brand">
+        <div class="icon">✚</div>
+        <span>MediStock</span>
+    </a>
+
+    <!-- Links de navegacion - algunos solo para admin -->
+    <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}" class="active">Inicio</a>
+        <a href="{{ url_for('inventario') }}">Inventario</a>
+        <a href="{{ url_for('salida_medicamento') }}">Dispensar</a>
+
+        <!-- Estos links solo aparecen si el usuario es admin -->
+        {% if session['rol'] == 'admin' %}
+            <a href="{{ url_for('entrada_medicamento') }}">Entrada</a>
+            <a href="{{ url_for('alertas') }}">Alertas</a>
+            <a href="{{ url_for('reportes') }}">Reportes</a>
+            <a href="{{ url_for('auditoria') }}">Auditoría</a>
+        {% endif %}
+    </div>
+
+    <!-- Info del usuario y logout -->
+    <div class="nav-user">
+        <div class="user-info">
+            <div class="user-name">{{ session['nombre'] }}</div>
+            <!-- Mostrar el rol de forma bonita -->
+            <div class="user-role">
+                {% if session['rol'] == 'admin' %}Administrador{% else %}Farmacéutico{% endif %}
+            </div>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</nav>
+
+<!-- ============================================================
+     CONTENIDO PRINCIPAL
+     ============================================================ -->
+<main class="main">
+
+    <!-- Saludo personalizado con el nombre del usuario -->
+    <div class="welcome">
+        <h1>Bienvenido, {{ session['nombre'].split()[0] }} </h1>
+        <p>
+            {% if session['rol'] == 'admin' %}
+                Panel de administración · {{ hoy.strftime('%d de %B de %Y') }}
+            {% else %}
+                Panel de farmacéutico · {{ hoy.strftime('%d de %B de %Y') }}
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Mensajes flash (errores o confirmaciones) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- ---- TARJETAS DE RESUMEN ---- -->
+    <div class="cards-grid">
+
+        <!-- Total de medicamentos registrados -->
+        <div class="card">
+            <div class="card-info">
+                <div class="value">{{ total_medicamentos }}</div>
+                <div class="label">Medicamentos registrados</div>
+            </div>
+        </div>
+
+        <!-- Alertas proximas a vencer (en los proximos 90 dias) -->
+        <div class="card">
+            <div class="card-info">
+                <div class="value">{{ alertas | length }}</div>
+                <div class="label">Lotes próximos a vencer</div>
+            </div>
+        </div>
+
+        <!-- Lotes completamente vencidos -->
+        <div class="card">
+            <div class="card-info">
+                <div class="value">{{ lotes_vencidos }}</div>
+                <div class="label">Lotes vencidos</div>
+            </div>
+        </div>
+
+        <!-- Rol del usuario actual -->
+        <div class="card">
+            <div class="card-info">
+                <div class="value" style="font-size:16px; margin-top:4px;">
+                    {% if session['rol'] == 'admin' %}Admin{% else %}Farmacéutico{% endif %}
+                </div>
+                <div class="label">Tu rol en el sistema</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ---- PANEL DE ALERTAS SEMAFORO ---- -->
+    <!-- Solo se muestra si hay alertas activas -->
+    {% if session['rol'] == 'admin' %}
+    <div class="alertas-section">
+        <div class="section-title">
+             Alertas de farmacovigilancia
+        </div>
+
+        {% if alertas %}
+        <table class="alertas-table">
+            <thead>
+                <tr>
+                    <th>Medicamento</th>
+                    <th>Lote</th>
+                    <th>Cantidad</th>
+                    <th>Fecha caducidad</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for alerta in alertas %}
+                <tr>
+                    <td><strong>{{ alerta.medicamento }}</strong></td>
+                    <td>{{ alerta.numero_lote }}</td>
+                    <td>{{ alerta.cantidad }} uds.</td>
+                    <td>{{ alerta.fecha_caducidad }}</td>
+                    <td>
+                        <!-- Semaforo segun los dias restantes -->
+                        {% if alerta.dias_restantes <= 0 %}
+                            <span class="badge vencido">
+                                <span class="dot vencido"></span> Vencido
+                            </span>
+                        {% elif alerta.dias_restantes <= 30 %}
+                            <span class="badge rojo">
+                                <span class="dot rojo"></span> {{ alerta.dias_restantes }} días
+                            </span>
+                        {% elif alerta.dias_restantes <= 60 %}
+                            <span class="badge amarillo">
+                                <span class="dot amarillo"></span> {{ alerta.dias_restantes }} días
+                            </span>
+                        {% else %}
+                            <span class="badge verde">
+                                <span class="dot verde"></span> {{ alerta.dias_restantes }} días
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+        <!-- Estado vacio: sin alertas -->
+        <div class="empty-state">
+            <div class="icon"></div>
+            <p>No hay lotes próximos a vencer en los próximos 90 días.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- ---- ACCESOS RAPIDOS ---- -->
+    <div class="section-title"> Accesos rápidos</div>
+    <div class="accesos-grid">
+
+        <!-- Ver inventario - disponible para todos -->
+        <a href="{{ url_for('inventario') }}" class="acceso-card">
+            <div class="acc-icon"></div>
+            <div class="acc-title">Ver inventario</div>
+            <div class="acc-desc">Consultar medicamentos y lotes</div>
+        </a>
+
+        <!-- Dispensar - disponible para todos -->
+        <a href="{{ url_for('salida_medicamento') }}" class="acceso-card">
+            <div class="acc-icon"></div>
+            <div class="acc-title">Dispensar medicamento</div>
+            <div class="acc-desc">Registrar salida a paciente</div>
+        </a>
+
+        <!-- Los siguientes solo para admin -->
+        {% if session['rol'] == 'admin' %}
+        <a href="{{ url_for('entrada_medicamento') }}" class="acceso-card">
+            <div class="acc-icon"></div>
+            <div class="acc-title">Registrar entrada</div>
+            <div class="acc-desc">Agregar nuevo lote al inventario</div>
+        </a>
+
+        <a href="{{ url_for('alertas') }}" class="acceso-card">
+            <div class="acc-icon"></div>
+            <div class="acc-title">Panel de alertas</div>
+            <div class="acc-desc">Ver semáforo de caducidad</div>
+        </a>
+
+        <a href="{{ url_for('reportes') }}" class="acceso-card">
+            <div class="acc-icon"></div>
+            <div class="acc-title">Reportes</div>
+            <div class="acc-desc">Consumo por periodo y tipo</div>
+        </a>
+
+        <a href="{{ url_for('auditoria') }}" class="acceso-card">
+            <div class="acc-icon"></div>
+            <div class="acc-title">Auditoría</div>
+            <div class="acc-desc">Historial de transacciones</div>
+        </a>
+        {% endif %}
+
+    </div>
+
+</main>
+
+</body>
+</html>
