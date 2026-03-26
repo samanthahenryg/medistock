@@ -110,3 +110,6 @@ VALUES
     ('Paracetamol 500mg', 'Analgesico y antipiretico', 'libre', 'piezas'),
     ('Morfina 10mg', 'Analgesico opioide de uso controlado', 'controlado', 'ampolletas'),
     ('Amoxicilina 500mg', 'Antibiotico de amplio espectro', 'libre', 'capsulas');
+
+INSERT INTO usuarios (username, password, nombre, rol)
+VALUES ('farmaceutico', 'HASH_AQUI', 'Farmaceutico de Prueba', 'farmaceutico');

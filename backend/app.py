@@ -605,10 +605,15 @@ def inicializar_bd():
         'UPDATE usuarios SET password = ? WHERE username = ?',
         (hash_password('admin123'), 'admin')
     )
+    conn.execute(
+        'UPDATE usuarios SET password = ? WHERE username = ?',
+        (hash_password('farma123'), 'farmaceutico')
+    )
     conn.commit()
     conn.close()
     print('Base de datos inicializada correctamente.')
     print('Usuario: admin | Contrasena: admin123')
+    print('Usuario: farmaceutico | Contrasena: farma123')
 
 
 # ============================================================
