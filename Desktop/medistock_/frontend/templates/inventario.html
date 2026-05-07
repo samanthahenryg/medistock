@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediStock — Inventario</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #F0F4F8; color: #1a1a2e; }
+
+        .navbar { background: #2E4D7B; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .navbar-brand { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; }
+        .navbar-brand .icon { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .navbar-brand span { font-size: 20px; font-weight: 700; }
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+        .nav-links a { color: rgba(255,255,255,0.80); text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.15); color: white; }
+        .nav-user { display: flex; align-items: center; gap: 12px; }
+        .user-name { color: white; font-size: 13px; font-weight: 600; }
+        .user-role { color: rgba(255,255,255,0.60); font-size: 11px; text-transform: uppercase; }
+        .btn-logout { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; text-decoration: none; }
+        .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+        .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .page-header h1 { font-size: 22px; font-weight: 700; }
+        .page-header p { font-size: 13px; color: #6B7280; margin-top: 2px; }
+
+        .btn { padding: 9px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; border: none; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-primary { background: #2E4D7B; color: white; }
+        .btn-primary:hover { background: #1F3A6B; }
+
+        .flash { padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 20px; }
+        .flash.error   { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+        .flash.success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+
+        /* Tabs para cambiar entre vista de medicamentos y lotes */
+        .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: white; padding: 4px; border-radius: 10px; width: fit-content; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+        .tab { padding: 7px 20px; border-radius: 7px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: #6B7280; transition: all 0.2s; }
+        .tab.active { background: #2E4D7B; color: white; }
+
+        /* Paneles de contenido */
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* Tabla general */
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #F3F4F6; background: #FAFAFA; }
+        td { padding: 14px 16px; border-bottom: 1px solid #F9FAFB; color: #374151; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #F9FAFB; }
+
+        /* Badges */
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge.controlado { background: #FEE2E2; color: #991B1B; }
+        .badge.libre      { background: #DCFCE7; color: #166534; }
+        .badge.rojo    { background: #FEE2E2; color: #991B1B; }
+        .badge.amarillo{ background: #FEF9C3; color: #854D0E; }
+        .badge.verde   { background: #DCFCE7; color: #166534; }
+        .badge.vencido { background: #F3F4F6; color: #6B7280; }
+
+        .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+        .dot.rojo    { background: #DC2626; }
+        .dot.amarillo{ background: #CA8A04; }
+        .dot.verde   { background: #16A34A; }
+        .dot.vencido { background: #9CA3AF; }
+
+        /* Stock bajo */
+        .stock-bajo { color: #DC2626; font-weight: 600; }
+        .stock-ok   { color: #16A34A; font-weight: 600; }
+
+        .empty-state { text-align: center; padding: 48px; color: #9CA3AF; }
+        .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="{{ url_for('dashboard') }}" class="navbar-brand">
+        <div class="icon">✚</div>
+        <span>MediStock</span>
+    </a>
+    <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}">Inicio</a>
+        <a href="{{ url_for('inventario') }}" class="active">Inventario</a>
+        <a href="{{ url_for('salida_medicamento') }}">Dispensar</a>
+        {% if session['rol'] == 'admin' %}
+            <a href="{{ url_for('entrada_medicamento') }}">Entrada</a>
+            <a href="{{ url_for('alertas') }}">Alertas</a>
+            <a href="{{ url_for('reportes') }}">Reportes</a>
+            <a href="{{ url_for('auditoria') }}">Auditoría</a>
+        {% endif %}
+    </div>
+    <div class="nav-user">
+        <div>
+            <div class="user-name">{{ session['nombre'] }}</div>
+            <div class="user-role">{% if session['rol'] == 'admin' %}Administrador{% else %}Farmacéutico{% endif %}</div>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</nav>
+
+<main class="main">
+    <div class="page-header">
+        <div>
+            <h1> Inventario</h1>
+            <p>Medicamentos y lotes registrados en el sistema</p>
+        </div>
+        {% if session['rol'] == 'admin' %}
+        <a href="{{ url_for('entrada_medicamento') }}" class="btn btn-primary"> Registrar entrada</a>
+        {% endif %}
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}{% endif %}
+    {% endwith %}
+
+    <!-- Tabs para cambiar entre medicamentos y lotes -->
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('medicamentos', this)"> Medicamentos</button>
+        <button class="tab" onclick="showTab('lotes', this)"> Lotes</button>
+    </div>
+
+    <!-- Panel: Lista de medicamentos con stock total -->
+    <div id="panel-medicamentos" class="panel active">
+        <div class="table-container">
+            {% if medicamentos %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Medicamento</th>
+                        <th>Tipo</th>
+                        <th>Unidad</th>
+                        <th>Stock total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for med in medicamentos %}
+                    <tr>
+                        <td><strong>{{ med.nombre }}</strong>{% if med.descripcion %}<br><span style="font-size:12px;color:#9CA3AF;">{{ med.descripcion }}</span>{% endif %}</td>
+                        <td>
+                            <span class="badge {{ med.tipo }}">
+                                {% if med.tipo == 'controlado' %} Controlado{% else %} Libre{% endif %}
+                            </span>
+                        </td>
+                        <td>{{ med.unidad_medida }}</td>
+                        <td>
+                            <span class="{% if med.stock_total == 0 %}stock-bajo{% elif med.stock_total < 10 %}stock-bajo{% else %}stock-ok{% endif %}">
+                                {{ med.stock_total }} {{ med.unidad_medida }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="icon"></div>
+                <p>No hay medicamentos registrados todavía.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Panel: Lista de lotes con semáforo de caducidad -->
+    <div id="panel-lotes" class="panel">
+        <div class="table-container">
+            {% if lotes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Medicamento</th>
+                        <th>Número de lote</th>
+                        <th>Cantidad</th>
+                        <th>Fecha caducidad</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lote in lotes %}
+                    <tr>
+                        <td>
+                            <strong>{{ lote.medicamento }}</strong><br>
+                            <span class="badge {{ lote.tipo }}" style="font-size:11px;">{{ lote.tipo }}</span>
+                        </td>
+                        <td><code style="background:#F3F4F6;padding:2px 6px;border-radius:4px;font-size:13px;">{{ lote.numero_lote }}</code></td>
+                        <td><strong>{{ lote.cantidad }}</strong></td>
+                        <td>{{ lote.fecha_caducidad }}</td>
+                        <td>
+                            {% if lote.dias_restantes <= 0 %}
+                                <span class="badge vencido"><span class="dot vencido"></span> Vencido</span>
+                            {% elif lote.dias_restantes <= 30 %}
+                                <span class="badge rojo"><span class="dot rojo"></span> {{ lote.dias_restantes }} días</span>
+                            {% elif lote.dias_restantes <= 60 %}
+                                <span class="badge amarillo"><span class="dot amarillo"></span> {{ lote.dias_restantes }} días</span>
+                            {% elif lote.dias_restantes <= 90 %}
+                                <span class="badge verde"><span class="dot verde"></span> {{ lote.dias_restantes }} días</span>
+                            {% else %}
+                                <span style="color:#6B7280;font-size:13px;">{{ lote.dias_restantes }} días</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="icon"></div>
+                <p>No hay lotes registrados todavía.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</main>
+
+<script>
+    // Cambiar entre el panel de medicamentos y el de lotes
+    function showTab(name, btn) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('panel-' + name).classList.add('active');
+        btn.classList.add('active');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediStock — Registrar Entrada</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #F0F4F8; color: #1a1a2e; }
+
+        .navbar { background: #2E4D7B; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .navbar-brand { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; }
+        .navbar-brand .icon { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .navbar-brand span { font-size: 20px; font-weight: 700; }
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+        .nav-links a { color: rgba(255,255,255,0.80); text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.15); color: white; }
+        .nav-user { display: flex; align-items: center; gap: 12px; }
+        .user-name { color: white; font-size: 13px; font-weight: 600; }
+        .user-role { color: rgba(255,255,255,0.60); font-size: 11px; text-transform: uppercase; }
+        .btn-logout { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 6px; font-size: 13px; text-decoration: none; }
+        .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+        .main { max-width: 600px; margin: 0 auto; padding: 32px 24px; }
+
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 22px; font-weight: 700; }
+        .page-header p { font-size: 13px; color: #6B7280; margin-top: 4px; }
+
+        .flash { padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 20px; }
+        .flash.error   { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+        .flash.success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+
+        /* Formulario */
+        .form-card { background: white; border-radius: 14px; padding: 32px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+        .label-hint { font-size: 11px; color: #9CA3AF; font-weight: 400; margin-left: 4px; }
+
+        select, input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #111827;
+            outline: none;
+            background: white;
+            transition: border-color 0.2s;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        select:focus, input:focus { border-color: #2E4D7B; box-shadow: 0 0 0 3px rgba(46,77,123,0.10); }
+
+        /* Aviso de medicamento controlado */
+        .alerta-controlado {
+            display: none;
+            background: #FEF9C3;
+            border: 1px solid #FDE047;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #854D0E;
+            margin-top: 8px;
+        }
+
+        .form-actions { display: flex; gap: 12px; margin-top: 28px; }
+
+        .btn { padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; border: none; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-primary { background: #2E4D7B; color: white; flex: 1; justify-content: center; }
+        .btn-primary:hover { background: #1F3A6B; }
+        .btn-secondary { background: #F3F4F6; color: #374151; border: 1.5px solid #D1D5DB; }
+        .btn-secondary:hover { background: #E5E7EB; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="{{ url_for('dashboard') }}" class="navbar-brand">
+        <div class="icon">✚</div>
+        <span>MediStock</span>
+    </a>
+    <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}">Inicio</a>
+        <a href="{{ url_for('inventario') }}">Inventario</a>
+        <a href="{{ url_for('salida_medicamento') }}">Dispensar</a>
+        <a href="{{ url_for('entrada_medicamento') }}" class="active">Entrada</a>
+        <a href="{{ url_for('alertas') }}">Alertas</a>
+        <a href="{{ url_for('reportes') }}">Reportes</a>
+        <a href="{{ url_for('auditoria') }}">Auditoría</a>
+    </div>
+    <div class="nav-user">
+        <div>
+            <div class="user-name">{{ session['nombre'] }}</div>
+            <div class="user-role">Administrador</div>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</nav>
+
+<main class="main">
+    <div class="page-header">
+        <h1> Registrar entrada de medicamento</h1>
+        <p>Agrega un nuevo lote al inventario. Solo administradores pueden realizar esta acción.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}{% endif %}
+    {% endwith %}
+
+    <div class="form-card">
+        <form method="POST" action="{{ url_for('entrada_medicamento') }}">
+
+            <!-- Selector de medicamento -->
+            <div class="form-group">
+                <label for="medicamento_id">
+                    Medicamento <span class="label-hint">* obligatorio</span>
+                </label>
+                <select id="medicamento_id" name="medicamento_id" required onchange="verificarControlado(this)">
+                    <option value="">— Selecciona un medicamento —</option>
+                    {% for med in medicamentos %}
+                    <option value="{{ med.id }}" data-tipo="{{ med.tipo }}">
+                        {{ med.nombre }}
+                        {% if med.tipo == 'controlado' %} {% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+                <!-- Aviso si es medicamento controlado -->
+                <div class="alerta-controlado" id="aviso-controlado">
+                     Este es un medicamento controlado. Asegúrate de tener la documentación requerida para su ingreso.
+                </div>
+            </div>
+
+            <!-- Número de lote -->
+            <div class="form-group">
+                <label for="numero_lote">
+                    Número de lote <span class="label-hint">* obligatorio</span>
+                </label>
+                <input
+                    type="text"
+                    id="numero_lote"
+                    name="numero_lote"
+                    placeholder="Ej: LOT-2025-001"
+                    required
+                >
+            </div>
+
+            <!-- Cantidad -->
+            <div class="form-group">
+                <label for="cantidad">
+                    Cantidad <span class="label-hint">* obligatorio</span>
+                </label>
+                <input
+                    type="number"
+                    id="cantidad"
+                    name="cantidad"
+                    placeholder="Ej: 100"
+                    min="1"
+                    required
+                >
+            </div>
+
+            <!-- Fecha de caducidad -->
+            <div class="form-group">
+                <label for="fecha_caducidad">
+                    Fecha de caducidad <span class="label-hint">* obligatorio — debe ser futura</span>
+                </label>
+                <input
+                    type="date"
+                    id="fecha_caducidad"
+                    name="fecha_caducidad"
+                    required
+                >
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('inventario') }}" class="btn btn-secondary">← Cancelar</a>
+                <button type="submit" class="btn btn-primary"> Registrar entrada</button>
+            </div>
+
+        </form>
+    </div>
+</main>
+
+<script>
+    // Establecer la fecha minima del selector como hoy + 1 dia
+    const fechaInput = document.getElementById('fecha_caducidad');
+    const hoy = new Date();
+    hoy.setDate(hoy.getDate() + 1);
+    fechaInput.min = hoy.toISOString().split('T')[0];
+
+    // Mostrar aviso si el medicamento seleccionado es controlado
+    function verificarControlado(select) {
+        const opcion = select.options[select.selectedIndex];
+        const tipo = opcion.getAttribute('data-tipo');
+        const aviso = document.getElementById('aviso-controlado');
+        aviso.style.display = tipo === 'controlado' ? 'block' : 'none';
+    }
+</script>
+</body>
+</html>
