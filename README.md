@@ -1,7 +1,7 @@
 # MediStock
 Sistema web para el control de inventario de medicamentos en farmacias hospitalarias.
 
-Desarrollado por estudiantes de Ingeniería de Software — UAG / Arizona State University, 2026.
+Ingenieria de Software I y Programación WEB
 
 ---
 
