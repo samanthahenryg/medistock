@@ -263,6 +263,7 @@ def inventario():
         FROM lotes l
         JOIN medicamentos m ON l.medicamento_id = m.id
         WHERE l.activo = 1
+          AND JULIANDAY(l.fecha_caducidad) - JULIANDAY('now') <= 90
         ORDER BY l.fecha_caducidad ASC
     ''').fetchall()
 
@@ -494,6 +495,7 @@ def alertas():
         FROM lotes l
         JOIN medicamentos m ON l.medicamento_id = m.id
         WHERE l.activo = 1
+          AND JULIANDAY(l.fecha_caducidad) - JULIANDAY('now') <= 90
         ORDER BY l.fecha_caducidad ASC
     ''').fetchall()
 

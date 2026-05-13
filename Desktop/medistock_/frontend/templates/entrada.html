@@ -92,7 +92,7 @@
     <div class="nav-user">
         <div>
             <div class="user-name">{{ session['nombre'] }}</div>
-            <div class="user-role">Administrador</div>
+            <div class="user-role">{% if session['rol'] == 'admin' %}Administrador{% else %}Farmacéutico{% endif %}</div>
         </div>
         <a href="{{ url_for('logout') }}" class="btn-logout">Cerrar sesión</a>
     </div>
